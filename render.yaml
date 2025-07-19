@@ -1,9 +1,9 @@
 services:
   - type: web
-    name: gemini-chatbot
+    name: chatbot-backend
     env: python
-    buildCommand: ""
-    startCommand: gchatbot.py
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn gchatbot:app"
     envVars:
-      - key: GEMINI_API_KEY
-        sync: false
+      - key: PORT
+        value: 10000  # or let Render set it dynamically
