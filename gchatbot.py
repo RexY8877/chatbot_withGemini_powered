@@ -2,7 +2,6 @@ import os
 import google.generativeai as genai
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from pyngrok import ngrok
 import threading
 import time
 import socket
@@ -12,14 +11,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-NGROK_AUTH_TOKEN = os.getenv("NGROK_AUTH_TOKEN")
 
 if not GEMINI_API_KEY:
     print("Error: GEMINI_API_KEY not set. Please set it in your environment variables.")
     exit()
-
-if not NGROK_AUTH_TOKEN:
-    print("Warning: NGROK_AUTH_TOKEN not set. Ngrok tunnel may not work.")
 
 try:
     genai.configure(api_key=GEMINI_API_KEY)
@@ -27,12 +22,6 @@ try:
 except Exception as e:
     print(f"Error configuring Gemini API: {e}")
     exit()
-
-try:
-    ngrok.set_auth_token(NGROK_AUTH_TOKEN)
-    print("Ngrok authentication token set successfully.")
-except Exception as e:
-    print(f"Error setting Ngrok auth token: {e}")
 
 # --- 2. Knowledge Base ---
 knowledge_base = [
@@ -115,53 +104,7 @@ def chat():
     response_text = get_chatbot_response(user_message)
     return jsonify({"response": response_text})
 
-# --- 6. Helper Functions ---
-def find_available_port(start_port=5000, max_attempts=10):
-    for i in range(max_attempts):
-        port = start_port + i
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            try:
-                s.bind(("127.0.0.1", port))
-                return port
-            except OSError:
-                continue
-    raise IOError("No available ports found.")
-
-def run_flask_app(port):
-    app.run(port=port, debug=False, use_reloader=False)
-
-def start_ngrok_tunnel(port):
-    try:
-        time.sleep(2)
-        public_url = ngrok.connect(port).public_url
-        print(f" * Ngrok Tunnel URL: {public_url}")
-    except Exception as e:
-        print(f"Ngrok error: {e}")
-
-# --- 7. Main Execution ---
+# --- 6. Main Execution ---
 if __name__ == '__main__':
-    try:
-        flask_port = find_available_port()
-        print(f"Running Flask on port: {flask_port}")
-
-        flask_thread = threading.Thread(target=run_flask_app, args=(flask_port,), daemon=True)
-        flask_thread.start()
-
-        start_ngrok_tunnel(flask_port)
-
-        while True:
-            time.sleep(1)
-
-    except KeyboardInterrupt:
-        print("Shutting down.")
-        ngrok.kill()
-
-    except Exception as e:
-        print(f"Fatal error: {e}")
-
-
-import os
-
-if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+    app.run(host='0.0.0.0', port=port)
