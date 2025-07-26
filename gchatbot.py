@@ -1,4 +1,5 @@
 import os
+from Knowledge_Base import knowledge_base  # 👈 import your knowledge base variable
 import google.generativeai as genai
 from flask import Flask, request, jsonify
 from flask_cors import CORS
@@ -6,6 +7,10 @@ import threading
 import time
 import socket
 from dotenv import load_dotenv
+def format_knowledge_base(kb):
+    return "\n\n".join([f"Q: {item['question']}\nA: {item['answer']}" for item in kb])
+
+kb_string = format_knowledge_base(knowledge_base)
 
 # --- 1. Load Environment Variables ---
 load_dotenv()
@@ -23,14 +28,14 @@ except Exception as e:
     print(f"Error configuring Gemini API: {e}")
     exit()
 
-# --- 2. Knowledge Base ---
+# --- 2. Knowledge Base (if you're going for basic embeded word to word Questions) ---
 knowledge_base = [("your knowledge base")
     ]
 
-# --- 3. Initialize Gemini Model ---
+# --- 2.5. Initialize Gemini Model ---
 model = genai.GenerativeModel('gemini-1.5-pro')
 
-# --- 4. Chatbot Logic ---
+# --- 3. Chatbot Logic ---
 def get_chatbot_response(user_query):
     lower_case_query = user_query.lower()
     for faq in knowledge_base:
@@ -40,11 +45,13 @@ def get_chatbot_response(user_query):
     try:
         kb_context = "\n\n".join([f"Q: {item['question']}\nA: {item['answer']}" for item in knowledge_base])
         prompt = f"""
-        Context:\n{kb_context}\n
-        Question: {user_query}
+Context:
+{kb_context}
 
-        If not found, suggest visiting the website.
-        """
+Question: {user_query}
+
+If not found, suggest visiting the website.
+"""
 
         response = model.generate_content(prompt)
 
@@ -57,7 +64,8 @@ def get_chatbot_response(user_query):
         print(f"Gemini API error: {e}")
         return "Oops! Something went wrong. Please try again."
 
-# --- 5. Flask Setup ---
+
+# --- 4. Flask Setup ---
 app = Flask(__name__)
 CORS(app)
 
@@ -74,7 +82,8 @@ def chat():
     response_text = get_chatbot_response(user_message)
     return jsonify({"response": response_text})
 
-# --- 6. Main Execution ---
+
+# --- 5. Main Execution ---
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
