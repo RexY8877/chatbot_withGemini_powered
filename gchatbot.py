@@ -33,7 +33,7 @@ knowledge_base = [("your knowledge base")
     ]
 
 # --- 2.5. Initialize Gemini Model ---
-model = genai.GenerativeModel('gemini-1.5-pro')
+model = genai.GenerativeModel('gemini-1.5-flash-latest')
 
 # --- 3. Chatbot Logic ---
 def get_chatbot_response(user_query):
