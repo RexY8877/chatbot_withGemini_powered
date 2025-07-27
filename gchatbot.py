@@ -28,11 +28,7 @@ except Exception as e:
     print(f"Error configuring Gemini API: {e}")
     exit()
 
-# --- 2. Knowledge Base (if you're going for basic embeded word to word Questions) ---
-knowledge_base = [("your knowledge base")
-    ]
-
-# --- 2.5. Initialize Gemini Model ---
+# --- 2. Initialize Gemini Model ---
 model = genai.GenerativeModel('gemini-1.5-flash-latest')
 
 # --- 3. Chatbot Logic ---
