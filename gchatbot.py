@@ -1,5 +1,6 @@
 import os
-from Knowledge_Base import knowledge_base  # 👈 import your knowledge base variable
+import Knowledge_Base
+from Knowledge_Base import knowledge_base
 import google.generativeai as genai
 from flask import Flask, request, jsonify
 from flask_cors import CORS
@@ -10,7 +11,7 @@ from dotenv import load_dotenv
 def format_knowledge_base(kb):
     return "\n\n".join([f"Q: {item['question']}\nA: {item['answer']}" for item in kb])
 
-kb_string = format_knowledge_base(knowledge_base)
+kb_string = format_knowledge_base(Knowledge_Base.knowledge_base)
 
 # --- 1. Load Environment Variables ---
 load_dotenv()
@@ -39,7 +40,7 @@ def get_chatbot_response(user_query):
             return faq["answer"]
 
     try:
-        kb_context = "\n\n".join([f"Q: {item['question']}\nA: {item['answer']}" for item in knowledge_base])
+        kb_context = "\\n\\n".join([f"Q: {item['question']}\\nA: {item['answer']}" for item in Knowledge_Base.knowledge_base])
         prompt = f"""
 Context:
 {kb_context}
