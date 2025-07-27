@@ -1,9 +1,11 @@
 services:
   - type: web
-    name: chatbot-backend
+    name: gchatbot
     env: python
+    plan: free
+    numInstances: 1
     buildCommand: "pip install -r requirements.txt"
     startCommand: "gunicorn gchatbot:app"
     envVars:
-      - key: PORT
-        value: 10000  # or let Render set it dynamically
+      - key: PYTHON_VERSION
+        value: 3.10.x
