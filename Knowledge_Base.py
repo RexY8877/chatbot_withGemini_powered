@@ -112,7 +112,7 @@ knowledge_base = [
     {
         "question": "What makes My Corporate School unique?",
         "keywords": ["unique", "why choose", "difference", "strengths"],
-        "answer": "Our trainers are seasoned professionals with real-world experience, and our programs are practical, hands-on, and outcome-driven."
+        "answer": "We believe in experiential learning so that the training is highly interactive and impactful. Since, this gives the trainees a first hand experience of the real world scenario."
     },
     {
         "question": "What is the duration of your programs?",
